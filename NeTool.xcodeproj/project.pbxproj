@@ -13,6 +13,8 @@
 		7A6E0097214CBD6A0020ED6D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7A6E0095214CBD6A0020ED6D /* Main.storyboard */; };
 		7A6E00A3214CBD6A0020ED6D /* NeToolTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A6E00A2214CBD6A0020ED6D /* NeToolTests.swift */; };
 		7A6E00AE214CBD6A0020ED6D /* NeToolUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A6E00AD214CBD6A0020ED6D /* NeToolUITests.swift */; };
+		7A6E00BC214CBD9B0020ED6D /* StatusBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A6E00BB214CBD9B0020ED6D /* StatusBarView.swift */; };
+		7A6E00BE214CDDA30020ED6D /* NetSpeedMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A6E00BD214CDDA30020ED6D /* NetSpeedMonitor.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -46,6 +48,8 @@
 		7A6E00A9214CBD6A0020ED6D /* NeToolUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NeToolUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		7A6E00AD214CBD6A0020ED6D /* NeToolUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NeToolUITests.swift; sourceTree = "<group>"; };
 		7A6E00AF214CBD6A0020ED6D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		7A6E00BB214CBD9B0020ED6D /* StatusBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusBarView.swift; sourceTree = "<group>"; };
+		7A6E00BD214CDDA30020ED6D /* NetSpeedMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetSpeedMonitor.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -102,6 +106,8 @@
 				7A6E0095214CBD6A0020ED6D /* Main.storyboard */,
 				7A6E0098214CBD6A0020ED6D /* Info.plist */,
 				7A6E0099214CBD6A0020ED6D /* NeTool.entitlements */,
+				7A6E00BB214CBD9B0020ED6D /* StatusBarView.swift */,
+				7A6E00BD214CDDA30020ED6D /* NetSpeedMonitor.swift */,
 			);
 			path = NeTool;
 			sourceTree = "<group>";
@@ -192,6 +198,11 @@
 				TargetAttributes = {
 					7A6E008B214CBD690020ED6D = {
 						CreatedOnToolsVersion = 9.4.1;
+						SystemCapabilities = {
+							com.apple.Sandbox = {
+								enabled = 0;
+							};
+						};
 					};
 					7A6E009D214CBD6A0020ED6D = {
 						CreatedOnToolsVersion = 9.4.1;
@@ -254,8 +265,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7A6E00BC214CBD9B0020ED6D /* StatusBarView.swift in Sources */,
 				7A6E0092214CBD690020ED6D /* ViewController.swift in Sources */,
 				7A6E0090214CBD690020ED6D /* AppDelegate.swift in Sources */,
+				7A6E00BE214CDDA30020ED6D /* NetSpeedMonitor.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -419,7 +432,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = NeTool/NeTool.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = NeTool/Info.plist;
@@ -429,7 +441,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = MicroStrategy.NeTool;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
@@ -437,7 +449,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = NeTool/NeTool.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = NeTool/Info.plist;
@@ -447,7 +458,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = MicroStrategy.NeTool;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};
