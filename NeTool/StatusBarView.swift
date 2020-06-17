@@ -24,7 +24,7 @@ open class StatusBarView: NSControl {
         menu?.delegate = self
         
         darkMenuBar = isDarkMode()
-        DistributedNotificationCenter.default().addObserver(self, selector: #selector(changeMode), name: NSNotification.Name(rawValue: "AppleInterfaceThemeChangedNotification"), object: nil)
+        DistributedNotificationCenter.default().addObserver(self, selector: #selector(change), name:NSNotification.Name(rawValue: "AppleInterfaceThemeChangedNotification"), object: nil)
     }
     
     required public init?(coder: NSCoder) {
@@ -37,7 +37,7 @@ open class StatusBarView: NSControl {
         statusItem.drawStatusBarBackground(in: dirtyRect, withHighlight: clicked)
         
         let textColor = (clicked || darkMenuBar) ? NSColor.white : NSColor.black
-        let textAttr = [NSFontAttributeName: NSFont.systemFont(ofSize: 9), NSForegroundColorAttributeName: textColor] as [String : Any]
+        let textAttr = [NSAttributedString.Key.font: NSFont.systemFont(ofSize: 9), NSAttributedString.Key.foregroundColor: textColor]
         
         let upRateStr = NSAttributedString(string: upRate + " ▲", attributes: textAttr)
         let upRateRect = upRateStr.boundingRect(with: NSSize(width: 100, height: 100), options: .usesLineFragmentOrigin)
@@ -48,7 +48,8 @@ open class StatusBarView: NSControl {
         downRateStr.draw(at: NSMakePoint(bounds.width - downRateRect.width - 5, 0))
     }
     
-    func changeMode() {
+    
+    @objc func change() {
         darkMenuBar = isDarkMode()
         setNeedsDisplay()
     }
