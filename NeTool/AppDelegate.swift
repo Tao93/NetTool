@@ -14,7 +14,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     let view: StatusBarView
     
     override init() {
-        let statusItem = NSStatusBar.system().statusItem(withLength: 72)
+        let statusItem = NSStatusBar.system.statusItem(withLength: 72)
         let menu = NSMenu()
         
         menu.addItem(withTitle: "Quit NeTool", action: #selector(menuItemQuitClick), keyEquivalent: "q")
@@ -34,7 +34,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 }
 
 extension AppDelegate {
-    func menuItemQuitClick() {
+    @objc func menuItemQuitClick() {
         NSApp.terminate(nil)
     }
 }
