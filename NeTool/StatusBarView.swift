@@ -10,17 +10,19 @@ import AppKit
 import Foundation
 
 open class StatusBarView: NSControl {
+    public static let INITIAL_RATE_TEXT = "- - B/S"
     
     var statusItem: NSStatusItem
     var clicked: Bool = false
     var darkMenuBar: Bool = false
-    var upRate: String = "- - B/S"
-    var downRate: String = "- - B/S"
+    var upRate: String = INITIAL_RATE_TEXT
+    var downRate: String = INITIAL_RATE_TEXT
     
     init(statusItem: NSStatusItem, menu: NSMenu?) {
         self.statusItem = statusItem
         super.init(frame: NSMakeRect(0, 0, statusItem.length, 30))
         self.menu = menu
+        
         menu?.delegate = self
         
         darkMenuBar = isDarkMode()
@@ -35,6 +37,7 @@ open class StatusBarView: NSControl {
     open override func draw(_ dirtyRect: NSRect) {
         // draw the background
         statusItem.drawStatusBarBackground(in: dirtyRect, withHighlight: clicked)
+        
         
         let textColor = (clicked || darkMenuBar) ? NSColor.white : NSColor.black
         let textAttr = [NSAttributedString.Key.font: NSFont.systemFont(ofSize: 9), NSAttributedString.Key.foregroundColor: textColor]
@@ -78,15 +81,18 @@ open class StatusBarView: NSControl {
 //action
 extension StatusBarView: NSMenuDelegate{
     open override func mouseDown(with theEvent: NSEvent) {
+        
         statusItem.popUpMenu(menu!)
     }
     
     public func menuWillOpen(_ menu: NSMenu) {
         setNeedsDisplay()
+        self.clicked = true
     }
     
     public func menuDidClose(_ menu: NSMenu) {
         setNeedsDisplay()
+        self.clicked = false
     }
 }
 

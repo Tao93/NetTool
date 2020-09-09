@@ -12,6 +12,7 @@ import Cocoa
 class AppDelegate: NSObject, NSApplicationDelegate {
     
     let view: StatusBarView
+    let speedMonitor: NetSpeedMonitor
     
     override init() {
         let statusItem = NSStatusBar.system.statusItem(withLength: 72)
@@ -21,15 +22,35 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         view = StatusBarView(statusItem: statusItem, menu: menu)
         statusItem.view = view
+        
+        speedMonitor = NetSpeedMonitor(statusBarView: view)
     }
     
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         // Insert code here to initialize your application
-        NetSpeedMonitor(statusBarView: view).startMonitor()
+        speedMonitor.start()
+        
+        NSWorkspace.shared.notificationCenter.addObserver(
+            self, selector: #selector(onWake(notification:)),
+            name: NSWorkspace.didWakeNotification, object: nil)
+
+        NSWorkspace.shared.notificationCenter.addObserver(
+            self, selector: #selector(onSleep(notification:)),
+            name: NSWorkspace.willSleepNotification, object: nil)
     }
     
     func applicationWillTerminate(_ aNotification: Notification) {
         // Insert code here to tear down your application
+    }
+    
+    @objc func onSleep(notification: NSNotification) {
+        print("sleep")
+        speedMonitor.stop()
+    }
+    
+    @objc func onWake(notification: NSNotification) {
+        print("wake")
+        speedMonitor.start()
     }
 }
 
