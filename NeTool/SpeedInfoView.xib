@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="16097.2" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+    <dependencies>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="16097.2"/>
+        <capability name="System colors introduced in macOS 10.13" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="SpeedInfoView" customModule="NeTool" customModuleProvider="target">
+            <connections>
+                <outlet property="hintHabel" destination="Pyv-4N-eBT" id="6EJ-aq-EZu"/>
+                <outlet property="pathLabel0" destination="xhX-jh-1ax" id="kJY-Oy-ve0"/>
+                <outlet property="pathLabel1" destination="W3V-gF-M4x" id="Ki9-mc-gSA"/>
+                <outlet property="pathLabel2" destination="fRj-S2-Fjb" id="oM5-5b-HKT"/>
+                <outlet property="pathLabel3" destination="oOS-8m-MV4" id="4IP-kg-vwg"/>
+                <outlet property="speedLabel0" destination="wFG-4O-zAJ" id="pFL-kq-5mH"/>
+                <outlet property="speedLabel1" destination="wro-ve-z2r" id="s28-Bg-bgF"/>
+                <outlet property="speedLabel2" destination="oS0-UK-LB6" id="fGj-Sf-fUt"/>
+                <outlet property="speedLabel3" destination="but-HD-18b" id="Ddj-Ux-XkM"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <customView id="c22-O7-iKe">
+            <rect key="frame" x="0.0" y="0.0" width="300" height="148"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+            <subviews>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="Pyv-4N-eBT">
+                    <rect key="frame" x="18" y="130" width="200" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="left" title="Label1" placeholderString="hello world" id="taO-Mk-JSn">
+                        <font key="font" metaFont="message" size="11"/>
+                        <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="xhX-jh-1ax">
+                    <rect key="frame" x="18" y="101" width="207" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="truncatingMiddle" alignment="left" title="Label2" id="QiL-mu-Xbx">
+                        <font key="font" usesAppearanceFont="YES"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="findHighlightColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="W3V-gF-M4x">
+                    <rect key="frame" x="18" y="72" width="207" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="truncatingMiddle" alignment="left" title="Label3" id="IJO-1M-HZk">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="keyboardFocusIndicatorColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="fRj-S2-Fjb">
+                    <rect key="frame" x="18" y="44" width="207" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="truncatingMiddle" alignment="left" title="Label4" id="lhY-cL-wYO">
+                        <font key="font" usesAppearanceFont="YES"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="keyboardFocusIndicatorColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="oOS-8m-MV4">
+                    <rect key="frame" x="18" y="15" width="207" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="truncatingMiddle" title="Label5" id="jtQ-Aj-Lia">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="keyboardFocusIndicatorColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="wFG-4O-zAJ">
+                    <rect key="frame" x="230" y="98" width="60" height="22"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="charWrapping" alignment="right" title="label6 label" drawsBackground="YES" id="hhV-Bh-dNs">
+                        <font key="font" metaFont="label" size="9"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="selectedTextBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="wro-ve-z2r" userLabel="Label7">
+                    <rect key="frame" x="230" y="69" width="60" height="22"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="charWrapping" alignment="right" title="Label7" drawsBackground="YES" id="vHr-jS-VsS">
+                        <font key="font" metaFont="label" size="9"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="selectedTextBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="oS0-UK-LB6">
+                    <rect key="frame" x="230" y="41" width="60" height="22"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="charWrapping" alignment="right" title="Label8" drawsBackground="YES" id="dPt-qo-YPO">
+                        <font key="font" metaFont="label" size="9"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="selectedTextBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="but-HD-18b">
+                    <rect key="frame" x="230" y="12" width="60" height="22"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="charWrapping" alignment="right" title="Label9" drawsBackground="YES" id="AGh-m4-76j">
+                        <font key="font" metaFont="label" size="9"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="selectedTextBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+            </subviews>
+            <point key="canvasLocation" x="56" y="91"/>
+        </customView>
+    </objects>
+</document>

@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7A431F392508E1D20050327A /* SpeedInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A431F382508E1D20050327A /* SpeedInfoView.swift */; };
+		7A431F3B2509BDFA0050327A /* SpeedInfoView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7A431F3A2509BDFA0050327A /* SpeedInfoView.xib */; };
 		7A6E0090214CBD690020ED6D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A6E008F214CBD690020ED6D /* AppDelegate.swift */; };
 		7A6E0092214CBD690020ED6D /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A6E0091214CBD690020ED6D /* ViewController.swift */; };
 		7A6E0094214CBD6A0020ED6D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7A6E0093214CBD6A0020ED6D /* Assets.xcassets */; };
@@ -35,6 +37,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		7A431F382508E1D20050327A /* SpeedInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeedInfoView.swift; sourceTree = "<group>"; };
+		7A431F3A2509BDFA0050327A /* SpeedInfoView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SpeedInfoView.xib; sourceTree = "<group>"; };
 		7A6E008C214CBD690020ED6D /* NeTool.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NeTool.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7A6E008F214CBD690020ED6D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		7A6E0091214CBD690020ED6D /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -108,6 +112,8 @@
 				7A6E0099214CBD6A0020ED6D /* NeTool.entitlements */,
 				7A6E00BB214CBD9B0020ED6D /* StatusBarView.swift */,
 				7A6E00BD214CDDA30020ED6D /* NetSpeedMonitor.swift */,
+				7A431F382508E1D20050327A /* SpeedInfoView.swift */,
+				7A431F3A2509BDFA0050327A /* SpeedInfoView.xib */,
 			);
 			path = NeTool;
 			sourceTree = "<group>";
@@ -240,6 +246,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7A6E0094214CBD6A0020ED6D /* Assets.xcassets in Resources */,
+				7A431F3B2509BDFA0050327A /* SpeedInfoView.xib in Resources */,
 				7A6E0097214CBD6A0020ED6D /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -267,6 +274,7 @@
 			files = (
 				7A6E00BC214CBD9B0020ED6D /* StatusBarView.swift in Sources */,
 				7A6E0092214CBD690020ED6D /* ViewController.swift in Sources */,
+				7A431F392508E1D20050327A /* SpeedInfoView.swift in Sources */,
 				7A6E0090214CBD690020ED6D /* AppDelegate.swift in Sources */,
 				7A6E00BE214CDDA30020ED6D /* NetSpeedMonitor.swift in Sources */,
 			);
@@ -434,12 +442,14 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 2;
 				INFOPLIST_FILE = NeTool/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MARKETING_VERSION = 1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = MicroStrategy.NeTool;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -452,12 +462,14 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 2;
 				INFOPLIST_FILE = NeTool/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MARKETING_VERSION = 1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = MicroStrategy.NeTool;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;

@@ -10,17 +10,23 @@ import AppKit
 import Foundation
 
 open class StatusBarView: NSControl {
+    public static let INITIAL_RATE_TEXT = "- - B/S"
     
     var statusItem: NSStatusItem
+    // true if users clicked menubar icon, and dropdown menu is shown.
     var clicked: Bool = false
+    // dark menu bar & dock style of OS before Mojave.
     var darkMenuBar: Bool = false
-    var upRate: String = "- - B/S"
-    var downRate: String = "- - B/S"
+    var upRate: String = INITIAL_RATE_TEXT
+    var downRate: String = INITIAL_RATE_TEXT
+    
+    public var speedMonitor: NetSpeedMonitor?
     
     init(statusItem: NSStatusItem, menu: NSMenu?) {
         self.statusItem = statusItem
-        super.init(frame: NSMakeRect(0, 0, statusItem.length, 30))
+        super.init(frame: NSMakeRect(0, 0, statusItem.length, NSStatusItem.squareLength))
         self.menu = menu
+        
         menu?.delegate = self
         
         darkMenuBar = isDarkMode()
@@ -35,6 +41,8 @@ open class StatusBarView: NSControl {
     open override func draw(_ dirtyRect: NSRect) {
         // draw the background
         statusItem.drawStatusBarBackground(in: dirtyRect, withHighlight: clicked)
+        
+        // draw up speed string and down speed string.
         
         let textColor = (clicked || darkMenuBar) ? NSColor.white : NSColor.black
         let textAttr = [NSAttributedString.Key.font: NSFont.systemFont(ofSize: 9), NSAttributedString.Key.foregroundColor: textColor]
@@ -73,20 +81,33 @@ open class StatusBarView: NSControl {
             self.setNeedsDisplay()
         })
     }
+    
+    func isMenuShown() -> Bool {
+        return self.clicked
+    }
 }
 
 //action
 extension StatusBarView: NSMenuDelegate{
     open override func mouseDown(with theEvent: NSEvent) {
+        
         statusItem.popUpMenu(menu!)
     }
     
     public func menuWillOpen(_ menu: NSMenu) {
         setNeedsDisplay()
+        self.clicked = true
+        
+        // fetch the top speed info of the last sample, hence users
+        // can see the results once menu is shown, rather than waiting for results of next sapmple.
+        DispatchQueue.global().async {
+            self.speedMonitor?.updateTopSpeedItems()
+        }
     }
     
     public func menuDidClose(_ menu: NSMenu) {
         setNeedsDisplay()
+        self.clicked = false
     }
 }
 
