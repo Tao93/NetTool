@@ -79,10 +79,12 @@ open class NetSpeedMonitor {
             
             // Get the data
             let data = pipe.fileHandleForReading.readDataToEndOfFile()
-            if #available(OSX 10.15, *) {
+            if #available(macOS 10.15, *) {
                 do {
                     try pipe.fileHandleForReading.close()
                 } catch { }
+            } else {
+                pipe.fileHandleForReading.closeFile()
             }
             let output = String(data: data, encoding: String.Encoding.utf8) ?? ""
             self.handleOutput(fetchedData: output)

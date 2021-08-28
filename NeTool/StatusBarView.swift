@@ -44,7 +44,17 @@ open class StatusBarView: NSControl {
         
         // draw up speed string and down speed string.
         
-        let textColor = (clicked || darkMenuBar) ? NSColor.white : NSColor.black
+        var textColor: NSColor
+        if #available(macOS 11.0, *) {
+            if (effectiveAppearance.name.rawValue.lowercased().contains("dark")) {
+                textColor = NSColor.white
+            } else {
+                textColor = NSColor.black
+            }
+        } else {
+            textColor = (clicked || darkMenuBar) ? NSColor.white : NSColor.black
+        }
+
         let textAttr = [NSAttributedString.Key.font: NSFont.systemFont(ofSize: 9), NSAttributedString.Key.foregroundColor: textColor]
         
         let upRateStr = NSAttributedString(string: upRate + " ▲", attributes: textAttr)
