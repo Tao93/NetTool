@@ -6,6 +6,8 @@
 //  Copyright © 2018 Liu, Tao (Toni). All rights reserved.
 //
 
+import AppKit
+import Darwin
 import Foundation
 
 open class NetSpeedMonitor {
@@ -30,16 +32,8 @@ open class NetSpeedMonitor {
     
     // stores info of bytes and speed of multiple apps.
     var pbArray = Array<ProcessBytes>()
-    
-    // the following 2 are for using "-l 0" argument of nettop command, which means the command
-    // would continuously output sample data, and we only execute this command once, and continuously
-    // consume the data.
-    // but currently we still use "-l 1" due to stability problem.
-    // the last line of last output, but the line is incomplete, hence we save and use it when next output is available.
-    var inCompleteLastLineOfLastOutput = ""
-    // the length of last header line. a header line starts with word "time", ends with word "bytes_out"
-    var lenOflastHeaderLine = 0
-    
+
+
     // timer to periodiclly execute nettop command.
     var timer: DispatchSourceTimer? = nil
     
@@ -103,62 +97,30 @@ open class NetSpeedMonitor {
         upBytesOfCur = 0
         downBytesOfCur = 0
         
-        inCompleteLastLineOfLastOutput = ""
-        lenOflastHeaderLine = 0
-        
         pidsOfLastOutput.removeAll()
         pidsOfCurOutput.removeAll()
         
         pbArray.removeAll()
         
-        self.statusBarView.updateData(up: StatusBarView.INITIAL_RATE_TEXT, down: StatusBarView.INITIAL_RATE_TEXT)
+        self.statusBarView.updateData(up: StatusBarView.initialRateText, down: StatusBarView.initialRateText)
     }
     
-    // this methods contains logic to consider unexpected output of nettop with "-l 0" argument,
-    // see comment of inCompleteLastLineOfLastOutput.
-    // many code are unnecessary for nettop with "-l 1" argument, i.e. current situation.
+    // Parse a single nettop -l 1 sample output.
     func handleOutput(fetchedData: String) {
-        
-        // the original nettop with previous arguments would produce output intervally and neatly.
-        // i.e. if you set "-s 1" argument for the command, the output would be produced per second,
-        // and each output is just sample of that second.
-        // however, each batch of output text we fetched from the data observer might be not one complete sample output.
-        
-        var validLines = Array<String>()
-        // first, split the output into several lines. the 1st line and last line might be incomplete.
-        // so we insert the inCompleteLastLineOfLastOutput in front of it, to mke sure 1st line is complete.
-        let lines = (inCompleteLastLineOfLastOutput + fetchedData).split(separator: "\n")
-        inCompleteLastLineOfLastOutput = ""  // clear after usage.
+        let allLines = fetchedData.split(separator: "\n")
+        var validLines: [String] = []
 
-        for i in 0...(lines.count - 1) {
-            let line = lines[i]
-            if line.count == 0 {  // skip empty lines.
-                continue
-            }
-            
-            if line.starts(with: "time") {
-                // if this is a header line and is complete, update the lenOflastHeaderLine
-                if String(line).substring(fromIndex: line.count - 3) == "out" {
-                    validLines.append(String(line))
-                    lenOflastHeaderLine = line.count
-                } else {
-                    if (i == lines.count - 1) {
-                        inCompleteLastLineOfLastOutput = String(line)
-                    } else {
-                        // unexpected output
-                    }
+        for ln in allLines {
+            let line = String(ln)
+            if line.isEmpty { continue }
+            if line.hasPrefix("time") {
+                // header line — skip for -l 1, but record its length for completeness
+                if line.hasSuffix("out") {
+                    validLines.append(line)
                 }
             } else {
-                // condition to check whether the line is complete
-                if line.count == lenOflastHeaderLine {
-                    validLines.append(String(line))
-                } else {
-                    if (i == lines.count - 1) {
-                        inCompleteLastLineOfLastOutput = String(line)
-                    } else {
-                        // unexpected output
-                    }
-                }
+                // data lines are complete in -l 1 mode
+                validLines.append(line)
             }
         }
         
@@ -219,7 +181,7 @@ open class NetSpeedMonitor {
         }
         
         // if dropdown menu is expanded, calculate TOP_ITEM_COUNT processes with top download speed.
-        if (statusBarView.isMenuShown()) {
+        if statusBarView.isMenuOpen {
             updateTopSpeedItems()
         }
     }
@@ -300,59 +262,76 @@ open class NetSpeedMonitor {
         }
         return nil
     }
-    
-    // get an array of SpeedInfo objects which represent apps with top net speed
-    func getTopSpeedInfo() -> Array<SpeedInfo>? {
-        if (pbArray.count < 5) {
-            return nil
+
+    /// Get the process name from a PID using libproc (for non-NSRunningApplication processes).
+    static func processName(for pid: Int32) -> String? {
+        var buffer = [CChar](repeating: 0, count: Int(MAXPATHLEN))
+        let ret = proc_name(pid, &buffer, UInt32(MAXPATHLEN))
+        guard ret > 0 else { return nil }
+        return String(cString: buffer)
+    }
+
+    /// Get the executable path for a PID using libproc.
+    static func processPath(for pid: Int32) -> String? {
+        var buffer = [CChar](repeating: 0, count: Int(MAXPATHLEN))
+        let ret = proc_pidpath(pid, &buffer, UInt32(MAXPATHLEN))
+        guard ret > 0 else { return nil }
+        return String(cString: buffer)
+    }
+
+    /// Extract a human-readable app name from a process executable path.
+    /// e.g. /Applications/Safari.app/Contents/MacOS/Safari → "Safari.app"
+    ///      /usr/sbin/mDNSResponder → "mDNSResponder"
+    static func appName(from path: String) -> String {
+        // For .app bundles: find ".app/Contents/" and take "XXX.app"
+        if let contentsRange = path.range(of: ".app/Contents/", options: .caseInsensitive) {
+            let trimmed = String(path[..<contentsRange.lowerBound]) + ".app"
+            if let slashIdx = trimmed.lastIndex(of: "/") {
+                return String(trimmed[trimmed.index(after: slashIdx)...])
+            }
+            return trimmed
         }
-        // use ps command to get all process path of the top 5 processes.
-        let pidsTemplate = "%@,%@,%@,%@,%@"
-        let pids = String(format: pidsTemplate, pbArray[0].pid, pbArray[1].pid, pbArray[2].pid, pbArray[3].pid, pbArray[4].pid)
-        let task = Process()
-        task.launchPath = "/bin/ps"
-        task.arguments = ["-p", pids]
-        let pipe = Pipe()
-        task.standardOutput = pipe
-        task.launch()
-        let data = pipe.fileHandleForReading.readDataToEndOfFile()
-        let output = String(data: data, encoding: String.Encoding.utf8) ?? ""
-        let lines = output.split(separator: "\n")
-        var result = Array<SpeedInfo>()
-        
-        let pathStartIdx = String(lines[0]).indexOf(str: "CMD")
-        for i in 0...(min(NetSpeedMonitor.TOP_ITEM_COUNT, pbArray.count)  - 1) {
-            // find the line which contains pid of pbArray[i].
-            var line: String? = nil
-            for ln in lines {
-                if ln.trimmingCharacters(in: .whitespacesAndNewlines).starts(with: pbArray[i].pid) {
-                    line = String(ln)
-                    break
-                }
+
+        // For non-bundle processes: take the executable name,
+        // truncating at the first space (command may include arguments)
+        let name = (path as NSString).lastPathComponent
+        if let spaceIdx = name.firstIndex(of: " ") {
+            return String(name[..<spaceIdx])
+        }
+        return name
+    }
+
+    // get an array of SpeedInfo objects which represent apps with top net speed
+    func getTopSpeedInfo() -> [SpeedInfo]? {
+        guard pbArray.count >= NetSpeedMonitor.TOP_ITEM_COUNT else { return nil }
+
+        let topN = min(NetSpeedMonitor.TOP_ITEM_COUNT, pbArray.count)
+        var result: [SpeedInfo] = []
+
+        for i in 0..<topN {
+            let pid = Int32(pbArray[i].pid) ?? -1
+            var name: String
+            let execPath = Self.processPath(for: pid) ?? ""
+
+            if let app = NSRunningApplication(processIdentifier: pid),
+               let localizedName = app.localizedName, !localizedName.isEmpty {
+                name = localizedName
+            } else if !execPath.isEmpty {
+                // Fallback: extract app name from .app bundle path
+                name = Self.appName(from: execPath)
+            } else if let procName = Self.processName(for: pid) {
+                // Last fallback: libproc process name
+                name = procName
+            } else {
+                name = String(pid)
             }
-            if line != nil {
-                // for XXX.app case, only take XXX.app as path.
-                let idx = line!.range(of: ".app/Contents/")?.lowerBound
-                var path: String
-                if idx == nil {
-                    let wholeCmd = line!.substring(fromIndex: pathStartIdx)
-                    // only take characters before the first space, because characters after
-                    // the space might be arguments of the process.
-                    let spaceIdx = wholeCmd.indexOf(str: " ")
-                    if spaceIdx > 0 {
-                        path = wholeCmd.substring(toIndex: spaceIdx)
-                    } else {
-                        path = wholeCmd
-                    }
-                } else {
-                    let trimedDotApp = String(line![..<idx!]) + ".app"
-                    path = String(trimedDotApp[trimedDotApp.index(after: trimedDotApp.lastIndex(of: "/")!)...])
-                }
-                let info = SpeedInfo(path: path,
-                                     upSpeed: NetSpeedMonitor.getSpeedString(bytes1: pbArray[i].upBytes1, bytes2: pbArray[i].upBytes2),
-                                     downSpeed: NetSpeedMonitor.getSpeedString(bytes1: pbArray[i].downBytes1, bytes2: pbArray[i].downBytes2))
-                result.append(info)
-            }
+
+            let info = SpeedInfo(
+                name: name,
+                path: execPath,
+                upSpeed: NetSpeedMonitor.getSpeedString(bytes1: pbArray[i].upBytes1, bytes2: pbArray[i].upBytes2),
+                downSpeed: NetSpeedMonitor.getSpeedString(bytes1: pbArray[i].downBytes1, bytes2: pbArray[i].downBytes2))
+            result.append(info)
         }
         return result
     }
@@ -374,41 +353,11 @@ struct ProcessBytes {
 }
 
 struct SpeedInfo {
-    // app name or command path.
+    // app name (via NSRunningApplication)
+    var name: String
+    // full executable path (via proc_pidpath)
     var path: String
     // upload speed string
     var upSpeed: String
     var downSpeed: String
-}
-
-// string utils.
-extension String {
-
-    var length: Int {
-        return count
-    }
-
-    subscript (i: Int) -> String {
-        return self[i ..< i + 1]
-    }
-
-    func substring(fromIndex: Int) -> String {
-        return self[min(fromIndex, length) ..< length]
-    }
-
-    func substring(toIndex: Int) -> String {
-        return self[0 ..< max(0, toIndex)]
-    }
-
-    subscript (r: Range<Int>) -> String {
-        let range = Range(uncheckedBounds: (lower: max(0, min(length, r.lowerBound)),
-                                            upper: min(length, max(0, r.upperBound))))
-        let start = index(startIndex, offsetBy: range.lowerBound)
-        let end = index(start, offsetBy: range.upperBound - range.lowerBound)
-        return String(self[start ..< end])
-    }
-    
-    func indexOf(str: String) -> Int {
-        return range(of: str)?.lowerBound.utf16Offset(in: self) ?? -1
-    }
 }

@@ -1,17 +1,36 @@
 #### What's this
 
-macOS 状态栏显示实时网速的小工具, macOS menubar app to minitor internet speed. 
+macOS 状态栏显示实时网速的小工具, macOS menubar app to monitor internet speed.
 
-#### version 1.1:
+Shows an icon in the top menu bar displaying total upload/download speed. Click to reveal a dropdown listing the **top 4 apps** by network bandwidth with per-app upload/download rates.
 
 ![](https://raw.githubusercontent.com/Tao93/Tao93.github.io/master/images/2020/09/12/1599909886.jpg)
 
-#### version 1.2:
+#### Build (no Xcode required!)
 
-![](http://tao93.top/images/2018/09/15/1537000487.png)
+Only Xcode Command Line Tools (`xcode-select --install`) are needed:
 
-#### 原理：
+```bash
+./build.sh
+open build/NeTool.app
+```
 
-使用 macOS 中的 nettop 命令，即可查看当前时刻各进程已经 download 和 upload 的字节数，持续按时执行 nettop 命令然后求差，即可得知网速详情。
+The build script uses `swiftc` to compile all sources directly — no `.xcodeproj`, no storyboard, no XIB files required.
 
-Use the nettop command of macOS, we can get the uploaded and downloaded bytes of each process. By continuously execute the nettop command, we can know the net speed of each process.
+#### Principle
+
+Uses the macOS `nettop` command to sample accumulated bytes per process at regular intervals. Speed is computed by taking the difference between consecutive samples.
+
+```
+nettop -x -t wifi -t wired -J time,bytes_in,bytes_out -P -l 1
+```
+
+#### Architecture
+
+| File                    | Purpose                                                                             |
+| ----------------------- | ----------------------------------------------------------------------------------- |
+| `main.swift`            | Entry point — creates `NSApplication`, minimal menu (just Quit), sets `LSUIElement` |
+| `AppDelegate.swift`     | Wires up `NSStatusBar` item, menu, and `NetSpeedMonitor`                            |
+| `NetSpeedMonitor.swift` | Core logic: polls `nettop`, parses output, computes per-process speeds              |
+| `StatusBarView.swift`   | Custom `NSControl` rendered in the menu bar showing ▲▼ rates                        |
+| `SpeedInfoView.swift`   | Dropdown panel (pure code, no XIB) showing top 4 apps                               |

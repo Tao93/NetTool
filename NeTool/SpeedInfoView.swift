@@ -10,48 +10,84 @@ import AppKit
 
 class SpeedInfoView: NSControl {
 
-    @IBOutlet weak var hintHabel: NSTextField!
+    var hintLabel: NSTextField!
     
-    @IBOutlet weak var pathLabel0: NSTextField!
-    @IBOutlet weak var pathLabel1: NSTextField!
-    @IBOutlet weak var pathLabel2: NSTextField!
-    @IBOutlet weak var pathLabel3: NSTextField!
+    var pathLabel0: NSTextField!
+    var pathLabel1: NSTextField!
+    var pathLabel2: NSTextField!
+    var pathLabel3: NSTextField!
     
-    @IBOutlet weak var speedLabel0: NSTextField!
-    @IBOutlet weak var speedLabel1: NSTextField!
-    @IBOutlet weak var speedLabel2: NSTextField!
-    @IBOutlet weak var speedLabel3: NSTextField!
+    var speedLabel0: NSTextField!
+    var speedLabel1: NSTextField!
+    var speedLabel2: NSTextField!
+    var speedLabel3: NSTextField!
     
-    var pathLabelArr: Array<NSTextField> = []
-    var speedLabelArr: Array<NSTextField> = []
+    var pathLabelArr: [NSTextField] = []
+    var speedLabelArr: [NSTextField] = []
+    var pathArr: [String] = []  // full executable paths for clipboard copy
     
     init() {
-        
         super.init(frame: NSMakeRect(0, 0, 300, 148))
-        
-        // load from xib file.
-        let newNib = NSNib(nibNamed: "SpeedInfoView", bundle: Bundle(for: type(of: self)))
-        newNib!.instantiate(withOwner: self, topLevelObjects: nil)
-        
-        pathLabelArr = [pathLabel0, pathLabel1, pathLabel2, pathLabel3]
-        speedLabelArr = [speedLabel0, speedLabel1, speedLabel2, speedLabel3]
-        
-        addSubview(hintHabel)
-        hintHabel.stringValue = "Click to copy path"
-        for label in pathLabelArr {
-            addSubview(label)
-            label.stringValue = "- - -"
-        }
-        for label in speedLabelArr {
-            addSubview(label)
-            label.stringValue = "- - B/S ▲\n- - B/S ▼"
-        }
-        
-        setNeedsDisplay()
+        buildUI()
     }
     
     required public init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    private func buildUI() {
+        // --- Hint label at top ---
+        hintLabel = NSTextField(frame: NSMakeRect(18, 130, 200, 16))
+        hintLabel.isEditable = false
+        hintLabel.isBordered = false
+        hintLabel.drawsBackground = false
+        hintLabel.font = NSFont.messageFont(ofSize: 11)
+        hintLabel.textColor = NSColor.secondaryLabelColor
+        hintLabel.stringValue = "Click to copy full path"
+        addSubview(hintLabel)
+        
+        // --- Path labels (left side) ---
+        let pathYs: [CGFloat] = [101, 72, 44, 15]
+        let pathLabels: [NSTextField] = pathYs.map { y in
+            let label = NSTextField(frame: NSMakeRect(18, y, 207, 16))
+            label.isEditable = false
+            label.isBordered = false
+            label.drawsBackground = false
+            label.font = NSFont.systemFont(ofSize: NSFont.systemFontSize)
+            label.textColor = NSColor.labelColor
+            label.lineBreakMode = .byTruncatingMiddle
+            label.stringValue = "- - -"
+            addSubview(label)
+            return label
+        }
+        pathLabel0 = pathLabels[0]
+        pathLabel1 = pathLabels[1]
+        pathLabel2 = pathLabels[2]
+        pathLabel3 = pathLabels[3]
+        pathLabelArr = [pathLabel0, pathLabel1, pathLabel2, pathLabel3]
+        
+        // --- Speed labels (right side, two-line) ---
+        let speedYs: [CGFloat] = [98, 69, 41, 12]
+        let speedLabels: [NSTextField] = speedYs.map { y in
+            let label = NSTextField(frame: NSMakeRect(230, y, 60, 22))
+            label.isEditable = false
+            label.isBordered = false
+            label.drawsBackground = true
+            label.backgroundColor = NSColor.unemphasizedSelectedTextBackgroundColor
+            label.font = NSFont.labelFont(ofSize: 9)
+            label.textColor = NSColor.labelColor
+            label.alignment = .right
+            label.maximumNumberOfLines = 2
+            label.lineBreakMode = .byCharWrapping
+            label.stringValue = "- - B/S ▲\n- - B/S ▼"
+            addSubview(label)
+            return label
+        }
+        speedLabel0 = speedLabels[0]
+        speedLabel1 = speedLabels[1]
+        speedLabel2 = speedLabels[2]
+        speedLabel3 = speedLabels[3]
+        speedLabelArr = [speedLabel0, speedLabel1, speedLabel2, speedLabel3]
     }
     
     open override func draw(_ dirtyRect: NSRect) {
@@ -73,10 +109,14 @@ class SpeedInfoView: NSControl {
         // event.locationInWindow is relative to window, convert that to be relative this view.
         let clickLocation = convert(event.locationInWindow, from: nil)
         
-        for label in pathLabelArr {
+        for (i, label) in pathLabelArr.enumerated() {
             if (label.frame.contains(clickLocation)) {
-                // copy path to clipborad, then users could use it.
-                copyToClipBoard(textToCopy: label.stringValue)
+                // copy full executable path to clipboard
+                if i < pathArr.count, !pathArr[i].isEmpty {
+                    copyToClipBoard(textToCopy: pathArr[i])
+                } else {
+                    copyToClipBoard(textToCopy: label.stringValue)
+                }
             }
         }
     }
@@ -85,10 +125,11 @@ class SpeedInfoView: NSControl {
         DispatchQueue.main.async {
             if (infoArr != nil) {
                 let count = min(infoArr!.count, self.pathLabelArr.count)
+                self.pathArr.removeAll()
                 for i in 0...(count - 1) {
-                    self.pathLabelArr[i].stringValue = infoArr![i].path
+                    self.pathLabelArr[i].stringValue = infoArr![i].name
                     self.speedLabelArr[i].stringValue = infoArr![i].upSpeed + " ▲\n" + infoArr![i].downSpeed + " ▼"
-                    //self.speedLabelArr[i].stringValue = "440.0 K/S" + " ▲\n" + "1000.8 M/S" + " ▼"
+                    self.pathArr.append(infoArr![i].path)
                 }
             }
         }
@@ -99,17 +140,17 @@ class SpeedInfoView: NSControl {
         pasteBoard.clearContents()
         pasteBoard.setString(textToCopy, forType: .string)
         
-        setHintText(new: "Path copied", duration: 2, recoverTo: "Click to copy path")
+        setHintText(new: "Path copied", duration: 2, recoverTo: "Click to copy full path")
     }
     
     // new: new hint text to show
     // duration: time seconds the new hint would last.
     // recoverTo: hint text to shown after duration.
     private func setHintText(new: String, duration: Int, recoverTo: String) {
-        hintHabel.stringValue = new
+        hintLabel.stringValue = new
 
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .seconds(duration), execute: {
-            self.hintHabel.stringValue = recoverTo
+            self.hintLabel.stringValue = recoverTo
         })
     }
 }

@@ -8,30 +8,28 @@
 
 import Cocoa
 
-@NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
     
     let speedMonitor: NetSpeedMonitor
     
     override init() {
-        let statusItem = NSStatusBar.system.statusItem(withLength: 72)
+        let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         let menu = NSMenu()
-        
+
         // the menu item to show apps with top net speed (sum of upload and download)
         let menuItem = NSMenuItem()
         menuItem.view = SpeedInfoView()
         menu.addItem(menuItem)
-        
+
         // the menu item to quit app.
         menu.addItem(withTitle: "Quit NeTool", action: #selector(menuItemQuitClick), keyEquivalent: "q")
-        
-        // the view for menuBar icon
-        let menuBarIconView = StatusBarView(statusItem: statusItem, menu: menu)
-        statusItem.view = menuBarIconView
-        
+
+        // status bar controller (uses NSStatusBarButton, no deprecated APIs)
+        let statusBarView = StatusBarView(statusItem: statusItem, menu: menu)
+
         // logic class to monitor net speed.
-        speedMonitor = NetSpeedMonitor(statusBarView: menuBarIconView, speedInfoView: menuItem.view as! SpeedInfoView)
-        menuBarIconView.speedMonitor = speedMonitor
+        speedMonitor = NetSpeedMonitor(statusBarView: statusBarView, speedInfoView: menuItem.view as! SpeedInfoView)
+        statusBarView.speedMonitor = speedMonitor
     }
     
     func applicationDidFinishLaunching(_ aNotification: Notification) {
